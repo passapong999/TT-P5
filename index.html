@@ -1,230 +1,640 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เกมสูตรคูณ 2-12</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
-    body { font-family: 'Kanit', sans-serif; }
-    .bounce-in { animation: bounceIn 0.6s ease-out; }
-    @keyframes bounceIn {
-        0% { transform: scale(0.3); opacity: 0; }
-        50% { transform: scale(1.05); }
-        70% { transform: scale(0.9); }
-        100% { transform: scale(1); opacity: 1; }
-    }
-    .pulse-correct { animation: pulseCorrect 0.5s ease-out; }
-    @keyframes pulseCorrect {
-        0% { transform: scale(1); background-color: #10b981; }
-        50% { transform: scale(1.1); background-color: #059669; }
-        100% { transform: scale(1); background-color: #10b981; }
-    }
-    .shake-wrong { animation: shakeWrong 0.5s ease-out; }
-    @keyframes shakeWrong {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-</style>
-</head>
-<body class="bg-gradient-to-br from-purple-400 via-pink-400 to-orange-400 min-h-screen">
-
-<!-- หน้าแรก -->
-<div id="homeScreen" class="min-h-screen flex flex-col justify-center items-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center bounce-in">
-        <div class="text-6xl mb-4">🧮</div>
-        <h1 class="text-3xl font-bold text-purple-600 mb-2">เกมสูตรคูณ</h1>
-        <h2 class="text-2xl font-bold text-pink-500 mb-8">2 - 12</h2>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>เกมสูตรคูณ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
         
-        <button onclick="showNameInput()" class="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-6">
-            🎮 เริ่มเกม
-        </button>
-        
-        <div class="bg-yellow-50 rounded-2xl p-4 w-full">
-            <h3 class="text-lg font-bold text-orange-600 mb-3">🏆 อันดับคะแนน</h3>
-            <div id="leaderboard" class="space-y-2 text-sm text-left">
-                <div class="text-gray-500">กำลังโหลด...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- หน้ากรอกชื่อ -->
-<div id="nameScreen" class="min-h-screen flex flex-col justify-center items-center p-4 hidden">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center bounce-in">
-        <div class="text-6xl mb-4">👋</div>
-        <h2 class="text-2xl font-bold text-purple-600 mb-6">กรอกชื่อของคุณ</h2>
-        
-        <input type="text" id="playerName" placeholder="ชื่อของคุณ" 
-               class="w-full text-lg p-4 border-2 border-purple-300 rounded-2xl mb-6 text-center focus:border-purple-500 focus:outline-none">
-        
-        <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-            ✨ เริ่มเล่น
-        </button>
-    </div>
-</div>
-
-<!-- หน้าเกม -->
-<div id="gameScreen" class="min-h-screen flex flex-col p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-lg p-4 mb-4 flex justify-between items-center">
-        <div class="text-lg font-bold text-purple-600">ข้อ <span id="questionNumber">1</span>/10</div>
-        <div class="text-lg font-bold text-orange-600">⏱️ <span id="timer">00:00</span></div>
-        <div class="text-lg font-bold text-green-600">คะแนน: <span id="score">0</span></div>
-    </div>
-    <div class="bg-white rounded-3xl shadow-2xl p-8 mb-6 text-center bounce-in">
-        <div class="text-5xl font-bold text-purple-600 mb-4" id="question">2 × 3 = ?</div>
-    </div>
-    <div class="grid grid-cols-2 gap-4 flex-1">
-        <button onclick="selectAnswer(0)" class="answer-btn bg-gradient-to-br from-red-400 to-red-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">6</button>
-        <button onclick="selectAnswer(1)" class="answer-btn bg-gradient-to-br from-blue-400 to-blue-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">8</button>
-        <button onclick="selectAnswer(2)" class="answer-btn bg-gradient-to-br from-green-400 to-green-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">10</button>
-        <button onclick="selectAnswer(3)" class="answer-btn bg-gradient-to-br from-yellow-400 to-yellow-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">12</button>
-    </div>
-</div>
-
-<!-- หน้าผลลัพธ์ -->
-<div id="resultScreen" class="min-h-screen flex flex-col justify-center items-center p-4 hidden">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center bounce-in">
-        <div class="text-6xl mb-4">🎉</div>
-        <h2 class="text-2xl font-bold text-purple-600 mb-4">เยี่ยมมาก!</h2>
-        <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
-            <div class="text-lg font-bold text-purple-600 mb-2">ผู้เล่น: <span id="finalPlayerName"></span></div>
-            <div class="text-lg font-bold text-green-600 mb-2">คะแนน: <span id="finalScore"></span>/10</div>
-            <div class="text-lg font-bold text-orange-600">เวลาที่ใช้: <span id="finalTime"></span></div>
-        </div>
-        <button onclick="playAgain()" class="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg mb-4">🔄 เล่นอีกครั้ง</button>
-        <button onclick="goHome()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg">🏠 กลับหน้าแรก</button>
-    </div>
-</div>
-
-<script>
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTvnfFF41KOXveiA0qY6W6fOexQ2jiMmIWWtxx6LMEaOj__YsBWtE4Y11LWm_7xXM7FA/exec";
-
-function sendScoreToGoogleSheet(playerName, score, totalTime) {
-    const data = { name: playerName, score: score, time: totalTime };
-    fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    }).catch(err => console.error("❌ เกิดข้อผิดพลาด:", err));
-}
-
-function loadLeaderboard() {
-    fetch(GOOGLE_SCRIPT_URL)
-    .then(res => res.json())
-    .then(data => {
-        data.sort((a, b) => {
-            if (b.score != a.score) return b.score - a.score;
-            return a.time - b.time;
-        });
-        data = data.slice(0, 5);
-        const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
-        const html = data.map((item, i) => {
-            const min = String(Math.floor(item.time / 60)).padStart(2,'0');
-            const sec = String(item.time % 60).padStart(2,'0');
-            return `<div class="flex justify-between bg-white rounded-lg p-2">
-                        <span>${medals[i]} ${item.name}</span>
-                        <span class="text-green-600">${item.score}/10</span>
-                        <span class="text-orange-600">${min}:${sec}</span>
-                    </div>`;
-        }).join("");
-        document.getElementById("leaderboard").innerHTML = html || "<div class='text-gray-500'>ยังไม่มีคะแนน</div>";
-    })
-    .catch(() => document.getElementById("leaderboard").innerHTML = "<div class='text-gray-500'>โหลดข้อมูลไม่สำเร็จ</div>");
-}
-
-let currentQuestion = 0, score = 0, startTime, questions = [], playerName = '', correctAnswer = 0, timerInterval;
-
-function generateQuestions() {
-    questions = [];
-    let used = new Set();
-    while (questions.length < 10) {
-        let a = Math.floor(Math.random() * 11) + 2;
-        let b = Math.floor(Math.random() * 11) + 2;
-        let key = `${Math.min(a,b)}-${Math.max(a,b)}`;
-        if (!used.has(key)) {
-            used.add(key);
-            let correct = a * b;
-            let wrongs = new Set([correct]);
-            while (wrongs.size < 4) wrongs.add(correct + Math.floor(Math.random() * 19) - 9 || correct + 1);
-            let answers = Array.from(wrongs);
-            answers.sort(() => Math.random() - 0.5);
-            questions.push({ question: `${a} × ${b} = ?`, answers, correct: answers.indexOf(correct) });
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    }
-}
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            color: #4a5568;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .timer {
+            font-size: 1.2rem;
+            color: #e53e3e;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .score {
+            font-size: 1.2rem;
+            color: #38a169;
+            font-weight: 600;
+        }
+        
+        .player-name {
+            font-size: 1.2rem;
+            color: #805ad5;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .name-input {
+            font-size: 1.1rem;
+            padding: 15px 20px;
+            border: 3px solid #cbd5e0;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 280px;
+            text-align: center;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: #805ad5;
+            box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.1);
+        }
+        
+        .question-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 15px;
+            border: 3px solid #e2e8f0;
+        }
+        
+        .question {
+            font-size: 1.6rem;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .question-number {
+            font-size: 1.2rem;
+            color: #805ad5;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .choices-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .choice-btn {
+            padding: 18px 15px;
+            border: 3px solid #cbd5e0;
+            border-radius: 12px;
+            background: white;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Kanit', sans-serif;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .choice-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+            transform: translateY(-2px);
+        }
+        
+        .choice-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .choice-btn.correct {
+            border-color: #38a169;
+            background: #38a169;
+            color: white;
+        }
+        
+        .choice-btn.incorrect {
+            border-color: #e53e3e;
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Kanit', sans-serif;
+            min-height: 50px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #38a169;
+        }
+        
+        .incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #e53e3e;
+        }
+        
+        .final-score {
+            background: #bee3f8;
+            color: #2a4365;
+            border: 2px solid #3182ce;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .final-score h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .game-container {
+                padding: 15px;
+                margin: 5px;
+                border-radius: 15px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+            
+            .timer {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+            
+            .score {
+                font-size: 1.1rem;
+            }
+            
+            .question-container {
+                margin: 15px 0;
+                padding: 15px;
+            }
+            
+            .question {
+                font-size: 1.4rem;
+                margin-bottom: 12px;
+            }
+            
+            .question-number {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+            
+            .choices-container {
+                gap: 12px;
+                margin-top: 15px;
+            }
+            
+            .choice-btn {
+                padding: 16px 12px;
+                font-size: 1.3rem;
+                min-height: 55px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                margin-top: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+                padding: 14px 30px;
+                font-size: 1.1rem;
+            }
+            
+            .name-input {
+                font-size: 1rem;
+                padding: 14px 18px;
+                max-width: 100%;
+            }
+            
+            .final-score {
+                padding: 20px;
+                font-size: 0.95rem;
+            }
+            
+            .final-score h2 {
+                font-size: 1.6rem;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 class="title">🧮 เกมสูตรคูณ</h1>
+            <div class="player-name hidden" id="player-display">👤 ผู้เล่น: <span id="player-name-display"></span></div>
+            <div class="timer">⏰ เวลา: <span id="time">00:00</span></div>
+            <div class="score">คะแนน: <span id="score">0</span>/30</div>
+        </div>
+        
+        <div id="game-area">
+            <div class="question-container">
+                <div class="question-number hidden" id="question-number">ข้อที่ 1/30</div>
+                <div class="question" id="question">กรอกชื่อของคุณเพื่อเริ่มเล่น!</div>
+                <input type="text" class="name-input" id="player-name-input" placeholder="ชื่อของคุณ" maxlength="20">
+                <div class="choices-container hidden" id="choices-container">
+                    <button class="choice-btn" id="choice1" onclick="selectChoice(0)"></button>
+                    <button class="choice-btn" id="choice2" onclick="selectChoice(1)"></button>
+                    <button class="choice-btn" id="choice3" onclick="selectChoice(2)"></button>
+                    <button class="choice-btn" id="choice4" onclick="selectChoice(3)"></button>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" id="start-btn" onclick="startGame()">เริ่มเกม</button>
+                <button class="btn btn-secondary hidden" id="next-btn" onclick="nextQuestion()">ข้อต่อไป</button>
+                <button class="btn btn-secondary hidden" id="restart-btn" onclick="restartGame()">เล่นใหม่</button>
+            </div>
+            
+            <div id="result" class="result hidden"></div>
+        </div>
+    </div>
 
-function showNameInput() {
-    document.getElementById('homeScreen').classList.add('hidden');
-    document.getElementById('nameScreen').classList.remove('hidden');
-}
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let startTime;
+        let timerInterval;
+        let gameStarted = false;
+        let selectedChoice = -1;
+        
+        // สร้างคำถาม 30 ข้อ แต่ละแม่สูตรคูณ 2-3 ข้อ
+        function generateQuestions() {
+            questions = [];
+            
+            // สร้างคำถามสำหรับแต่ละแม่สูตรคูณ 2-12
+            for (let table = 2; table <= 12; table++) {
+                // แต่ละแม่สูตรคูณจะมี 2-3 ข้อ (รวม 30 ข้อ)
+                let questionsPerTable;
+                if (table <= 4) {
+                    questionsPerTable = 3; // แม่ 2, 3, 4 มี 3 ข้อ (9 ข้อ)
+                } else {
+                    questionsPerTable = 2; // แม่ 5-12 มี 2 ข้อ (16 ข้อ) รวม 25 ข้อ
+                }
+                
+                // สร้างคำถามสำหรับแม่สูตรคูณนี้
+                const usedMultipliers = [];
+                for (let q = 0; q < questionsPerTable; q++) {
+                    let num2;
+                    do {
+                        num2 = Math.floor(Math.random() * 12) + 1; // 1-12
+                    } while (usedMultipliers.includes(num2));
+                    usedMultipliers.push(num2);
+                    
+                    const correctAnswer = table * num2;
+                    
+                    // สร้างตัวเลือกผิด 3 ตัว
+                    const wrongChoices = [];
+                    while (wrongChoices.length < 3) {
+                        const wrongTable = Math.floor(Math.random() * 11) + 2; // 2-12
+                        const wrongNum2 = Math.floor(Math.random() * 12) + 1; // 1-12
+                        const wrongAnswer = wrongTable * wrongNum2;
+                        
+                        if (wrongAnswer !== correctAnswer && !wrongChoices.includes(wrongAnswer)) {
+                            wrongChoices.push(wrongAnswer);
+                        }
+                    }
+                    
+                    // สุ่มตำแหน่งคำตอบที่ถูก
+                    const choices = [...wrongChoices, correctAnswer];
+                    const correctIndex = Math.floor(Math.random() * 4);
+                    choices[3] = choices[correctIndex];
+                    choices[correctIndex] = correctAnswer;
+                    
+                    questions.push({
+                        question: `${table} × ${num2}`,
+                        answer: correctAnswer,
+                        choices: choices,
+                        correctIndex: correctIndex
+                    });
+                }
+            }
+            
+            // เพิ่มคำถามเพิ่มเติมให้ครบ 30 ข้อ
+            while (questions.length < 30) {
+                const table = Math.floor(Math.random() * 11) + 2; // 2-12
+                const num2 = Math.floor(Math.random() * 12) + 1; // 1-12
+                const correctAnswer = table * num2;
+                
+                // ตรวจสอบว่าคำถามนี้มีอยู่แล้วหรือไม่
+                const questionExists = questions.some(q => q.question === `${table} × ${num2}`);
+                if (questionExists) continue;
+                
+                // สร้างตัวเลือกผิด 3 ตัว
+                const wrongChoices = [];
+                while (wrongChoices.length < 3) {
+                    const wrongTable = Math.floor(Math.random() * 11) + 2;
+                    const wrongNum2 = Math.floor(Math.random() * 12) + 1;
+                    const wrongAnswer = wrongTable * wrongNum2;
+                    
+                    if (wrongAnswer !== correctAnswer && !wrongChoices.includes(wrongAnswer)) {
+                        wrongChoices.push(wrongAnswer);
+                    }
+                }
+                
+                // สุ่มตำแหน่งคำตอบที่ถูก
+                const choices = [...wrongChoices, correctAnswer];
+                const correctIndex = Math.floor(Math.random() * 4);
+                choices[3] = choices[correctIndex];
+                choices[correctIndex] = correctAnswer;
+                
+                questions.push({
+                    question: `${table} × ${num2}`,
+                    answer: correctAnswer,
+                    choices: choices,
+                    correctIndex: correctIndex
+                });
+            }
+            
+            // สุ่มลำดับคำถาม
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
+        
+        // เริ่มเกม
+        function startGame() {
+            const playerName = document.getElementById('player-name-input').value.trim();
+            
+            if (!playerName) {
+                alert('กรุณากรอกชื่อของคุณก่อนเริ่มเล่น!');
+                document.getElementById('player-name-input').focus();
+                return;
+            }
+            
+            // แสดงชื่อผู้เล่น
+            document.getElementById('player-name-display').textContent = playerName;
+            document.getElementById('player-display').classList.remove('hidden');
+            
+            gameStarted = true;
+            currentQuestion = 0;
+            score = 0;
+            generateQuestions();
+            
+            document.getElementById('start-btn').classList.add('hidden');
+            document.getElementById('player-name-input').classList.add('hidden');
+            document.getElementById('choices-container').classList.remove('hidden');
+            document.getElementById('question-number').classList.remove('hidden');
+            document.getElementById('result').classList.add('hidden');
+            
+            startTimer();
+            showQuestion();
+            
+            // Focus ที่ช่องตอบ
+            document.getElementById('answer').focus();
+        }
+        
+        // แสดงคำถาม
+        function showQuestion() {
+            if (currentQuestion < questions.length) {
+                const question = questions[currentQuestion];
+                document.getElementById('question-number').textContent = `ข้อที่ ${currentQuestion + 1}/30`;
+                document.getElementById('question').textContent = question.question + ' = ?';
+                
+                // แสดงตัวเลือก
+                for (let i = 0; i < 4; i++) {
+                    const choiceBtn = document.getElementById(`choice${i + 1}`);
+                    choiceBtn.textContent = question.choices[i];
+                    choiceBtn.className = 'choice-btn';
+                }
+                
+                selectedChoice = -1;
+                updateScore();
+            } else {
+                endGame();
+            }
+        }
+        
+        // เลือกตัวเลือก
+        function selectChoice(index) {
+            if (selectedChoice !== -1) return; // ป้องกันการเลือกซ้ำ
+            
+            selectedChoice = index;
+            
+            // ตอบและไปข้อต่อไปทันที
+            submitAnswer();
+            setTimeout(() => {
+                nextQuestion();
+            }, 300);
+        }
+        
+        // ส่งคำตอบ
+        function submitAnswer() {
+            if (selectedChoice === -1) {
+                return;
+            }
+            
+            const question = questions[currentQuestion];
+            
+            if (selectedChoice === question.correctIndex) {
+                score++;
+            }
+            
+            updateScore();
+        }
+        
+        // ข้อต่อไป
+        function nextQuestion() {
+            currentQuestion++;
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }
+        
+        // จบเกม
+        function endGame() {
+            clearInterval(timerInterval);
+            gameStarted = false;
+            
+            const finalTime = document.getElementById('time').textContent;
+            const percentage = Math.round((score / 30) * 100);
+            
+            let message = '';
+            if (percentage >= 90) {
+                message = '🏆 ยอดเยี่ยม!';
+            } else if (percentage >= 70) {
+                message = '👍 ดีมาก!';
+            } else if (percentage >= 50) {
+                message = '😊 ดี!';
+            } else {
+                message = '💪 ลองใหม่นะ!';
+            }
+            
+            const playerName = document.getElementById('player-name-display').textContent;
+            
+            // สร้างวันที่และเวลาปัจจุบัน
+            const now = new Date();
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const year = (now.getFullYear() + 543); // แปลงเป็นปี พ.ศ.
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            const currentDateTime = `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+            
+            document.getElementById('question').innerHTML = `
+                <div class="final-score">
+                    <h2>${message}</h2>
+                    <p>👤 ผู้เล่น: ${playerName}</p>
+                    <p>📊 คะแนน: ${score}/30 (${percentage}%)</p>
+                    <p>⏱️ เวลาที่ใช้: ${finalTime}</p>
+                    <p>📅 วันที่และเวลา: ${currentDateTime}</p>
+                </div>
+            `;
+            
+            document.getElementById('choices-container').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('restart-btn').classList.remove('hidden');
+        }
+        
+        // เริ่มเกมใหม่
+        function restartGame() {
+            document.getElementById('restart-btn').classList.add('hidden');
+            document.getElementById('start-btn').classList.remove('hidden');
+            document.getElementById('player-name-input').classList.remove('hidden');
+            document.getElementById('player-display').classList.add('hidden');
+            document.getElementById('question-number').classList.add('hidden');
+            document.getElementById('question').textContent = 'กรอกชื่อของคุณเพื่อเริ่มเล่น!';
+            document.getElementById('player-name-input').value = '';
+            document.getElementById('time').textContent = '00:00';
+            document.getElementById('score').textContent = '0';
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('player-name-input').focus();
+        }
+        
+        // อัพเดทคะแนน
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+        
+        // จับเวลา
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                document.getElementById('time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
 
-function startGame() {
-    playerName = document.getElementById('playerName').value.trim();
-    if (!playerName) return alert('กรุณากรอกชื่อ');
-    document.getElementById('nameScreen').classList.add('hidden');
-    document.getElementById('gameScreen').classList.remove('hidden');
-    currentQuestion = 0; score = 0; startTime = Date.now();
-    generateQuestions(); showQuestion(); startTimer();
-}
-
-function showQuestion() {
-    if (currentQuestion >= 10) return endGame();
-    const q = questions[currentQuestion];
-    document.getElementById('question').textContent = q.question;
-    document.getElementById('questionNumber').textContent = currentQuestion + 1;
-    document.getElementById('score').textContent = score;
-    const btns = document.querySelectorAll('.answer-btn');
-    btns.forEach((btn,i) => { btn.textContent = q.answers[i]; btn.disabled = false; btn.classList.remove('pulse-correct','shake-wrong'); });
-    correctAnswer = q.correct;
-}
-
-function selectAnswer(i) {
-    const btns = document.querySelectorAll('.answer-btn');
-    btns.forEach(btn => btn.disabled = true);
-    if (i === correctAnswer) { score++; btns[i].classList.add('pulse-correct'); }
-    else { btns[i].classList.add('shake-wrong'); btns[correctAnswer].classList.add('pulse-correct'); }
-    setTimeout(() => { currentQuestion++; showQuestion(); }, 500);
-}
-
-function startTimer() {
-    timerInterval = setInterval(() => {
-        const t = Math.floor((Date.now() - startTime) / 1000);
-        const m = String(Math.floor(t/60)).padStart(2,'0');
-        const s = String(t%60).padStart(2,'0');
-        document.getElementById('timer').textContent = `${m}:${s}`;
-    }, 1000);
-}
-
-function endGame() {
-    clearInterval(timerInterval);
-    const totalTime = Math.floor((Date.now() - startTime) / 1000);
-    const m = String(Math.floor(totalTime / 60)).padStart(2,'0');
-    const s = String(totalTime % 60).padStart(2,'0');
-    document.getElementById('gameScreen').classList.add('hidden');
-    document.getElementById('resultScreen').classList.remove('hidden');
-    document.getElementById('finalPlayerName').textContent = playerName;
-    document.getElementById('finalScore').textContent = score;
-    document.getElementById('finalTime').textContent = `${m}:${s}`;
-    sendScoreToGoogleSheet(playerName, score, totalTime);
-    setTimeout(loadLeaderboard, 2000);
-}
-
-function playAgain() {
-    document.getElementById('resultScreen').classList.add('hidden');
-    document.getElementById('nameScreen').classList.remove('hidden');
-}
-
-function goHome() {
-    document.getElementById('resultScreen').classList.add('hidden');
-    document.getElementById('homeScreen').classList.remove('hidden');
-    loadLeaderboard();
-}
-
-loadLeaderboard();
-</script>
-</body>
+        
+        // กด Enter ในช่องชื่อเพื่อเริ่มเกม
+        document.getElementById('player-name-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !gameStarted) {
+                startGame();
+            }
+        });
+        
+        // Focus ที่ช่องชื่อเมื่อโหลดหน้า
+        window.addEventListener('load', function() {
+            document.getElementById('player-name-input').focus();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e9511c32bda8e9',t:'MTc1NTA5OTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
