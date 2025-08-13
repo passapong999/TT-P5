@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมสูตรคูณ 2-12</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+    body { font-family: 'Kanit', sans-serif; }
+    .bounce-in { animation: bounceIn 0.6s ease-out; }
+    @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .pulse-correct { animation: pulseCorrect 0.5s ease-out; }
+    @keyframes pulseCorrect {
+        0% { transform: scale(1); background-color: #10b981; }
+        50% { transform: scale(1.1); background-color: #059669; }
+        100% { transform: scale(1); background-color: #10b981; }
+    }
+    .shake-wrong { animation: shakeWrong 0.5s ease-out; }
+    @keyframes shakeWrong {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+</style>
+</head>
+<body class="bg-gradient-to-br from-purple-400 via-pink-400 to-orange-400 min-h-screen">
+
+<!-- หน้าแรก -->
+<div id="homeScreen" class="min-h-screen flex flex-col justify-center items-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center bounce-in">
+        <div class="text-6xl mb-4">🧮</div>
+        <h1 class="text-3xl font-bold text-purple-600 mb-2">เกมสูตรคูณ</h1>
+        <h2 class="text-2xl font-bold text-pink-500 mb-8">2 - 12</h2>
+        
+        <button onclick="showNameInput()" class="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-6">
+            🎮 เริ่มเกม
+        </button>
+        
+        <div class="bg-yellow-50 rounded-2xl p-4 w-full">
+            <h3 class="text-lg font-bold text-orange-600 mb-3">🏆 อันดับคะแนน</h3>
+            <div id="leaderboard" class="space-y-2 text-sm text-left">
+                <div class="text-gray-500">กำลังโหลด...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- หน้ากรอกชื่อ -->
+<div id="nameScreen" class="min-h-screen flex flex-col justify-center items-center p-4 hidden">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center bounce-in">
+        <div class="text-6xl mb-4">👋</div>
+        <h2 class="text-2xl font-bold text-purple-600 mb-6">กรอกชื่อของคุณ</h2>
+        
+        <input type="text" id="playerName" placeholder="ชื่อของคุณ" 
+               class="w-full text-lg p-4 border-2 border-purple-300 rounded-2xl mb-6 text-center focus:border-purple-500 focus:outline-none">
+        
+        <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+            ✨ เริ่มเล่น
+        </button>
+    </div>
+</div>
+
+<!-- หน้าเกม -->
+<div id="gameScreen" class="min-h-screen flex flex-col p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-lg p-4 mb-4 flex justify-between items-center">
+        <div class="text-lg font-bold text-purple-600">ข้อ <span id="questionNumber">1</span>/10</div>
+        <div class="text-lg font-bold text-orange-600">⏱️ <span id="timer">00:00</span></div>
+        <div class="text-lg font-bold text-green-600">คะแนน: <span id="score">0</span></div>
+    </div>
+    <div class="bg-white rounded-3xl shadow-2xl p-8 mb-6 text-center bounce-in">
+        <div class="text-5xl font-bold text-purple-600 mb-4" id="question">2 × 3 = ?</div>
+    </div>
+    <div class="grid grid-cols-2 gap-4 flex-1">
+        <button onclick="selectAnswer(0)" class="answer-btn bg-gradient-to-br from-red-400 to-red-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">6</button>
+        <button onclick="selectAnswer(1)" class="answer-btn bg-gradient-to-br from-blue-400 to-blue-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">8</button>
+        <button onclick="selectAnswer(2)" class="answer-btn bg-gradient-to-br from-green-400 to-green-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">10</button>
+        <button onclick="selectAnswer(3)" class="answer-btn bg-gradient-to-br from-yellow-400 to-yellow-500 text-white text-2xl font-bold rounded-2xl shadow-lg min-h-[100px]">12</button>
+    </div>
+</div>
+
+<!-- หน้าผลลัพธ์ -->
+<div id="resultScreen" class="min-h-screen flex flex-col justify-center items-center p-4 hidden">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center bounce-in">
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl font-bold text-purple-600 mb-4">เยี่ยมมาก!</h2>
+        <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
+            <div class="text-lg font-bold text-purple-600 mb-2">ผู้เล่น: <span id="finalPlayerName"></span></div>
+            <div class="text-lg font-bold text-green-600 mb-2">คะแนน: <span id="finalScore"></span>/10</div>
+            <div class="text-lg font-bold text-orange-600">เวลาที่ใช้: <span id="finalTime"></span></div>
+        </div>
+        <button onclick="playAgain()" class="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg mb-4">🔄 เล่นอีกครั้ง</button>
+        <button onclick="goHome()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg">🏠 กลับหน้าแรก</button>
+    </div>
+</div>
+
+<script>
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTvnfFF41KOXveiA0qY6W6fOexQ2jiMmIWWtxx6LMEaOj__YsBWtE4Y11LWm_7xXM7FA/exec";
+
+function sendScoreToGoogleSheet(playerName, score, totalTime) {
+    const data = { name: playerName, score: score, time: totalTime };
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    }).catch(err => console.error("❌ เกิดข้อผิดพลาด:", err));
+}
+
+function loadLeaderboard() {
+    fetch(GOOGLE_SCRIPT_URL)
+    .then(res => res.json())
+    .then(data => {
+        data.sort((a, b) => {
+            if (b.score != a.score) return b.score - a.score;
+            return a.time - b.time;
+        });
+        data = data.slice(0, 5);
+        const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+        const html = data.map((item, i) => {
+            const min = String(Math.floor(item.time / 60)).padStart(2,'0');
+            const sec = String(item.time % 60).padStart(2,'0');
+            return `<div class="flex justify-between bg-white rounded-lg p-2">
+                        <span>${medals[i]} ${item.name}</span>
+                        <span class="text-green-600">${item.score}/10</span>
+                        <span class="text-orange-600">${min}:${sec}</span>
+                    </div>`;
+        }).join("");
+        document.getElementById("leaderboard").innerHTML = html || "<div class='text-gray-500'>ยังไม่มีคะแนน</div>";
+    })
+    .catch(() => document.getElementById("leaderboard").innerHTML = "<div class='text-gray-500'>โหลดข้อมูลไม่สำเร็จ</div>");
+}
+
+let currentQuestion = 0, score = 0, startTime, questions = [], playerName = '', correctAnswer = 0, timerInterval;
+
+function generateQuestions() {
+    questions = [];
+    let used = new Set();
+    while (questions.length < 10) {
+        let a = Math.floor(Math.random() * 11) + 2;
+        let b = Math.floor(Math.random() * 11) + 2;
+        let key = `${Math.min(a,b)}-${Math.max(a,b)}`;
+        if (!used.has(key)) {
+            used.add(key);
+            let correct = a * b;
+            let wrongs = new Set([correct]);
+            while (wrongs.size < 4) wrongs.add(correct + Math.floor(Math.random() * 19) - 9 || correct + 1);
+            let answers = Array.from(wrongs);
+            answers.sort(() => Math.random() - 0.5);
+            questions.push({ question: `${a} × ${b} = ?`, answers, correct: answers.indexOf(correct) });
+        }
+    }
+}
+
+function showNameInput() {
+    document.getElementById('homeScreen').classList.add('hidden');
+    document.getElementById('nameScreen').classList.remove('hidden');
+}
+
+function startGame() {
+    playerName = document.getElementById('playerName').value.trim();
+    if (!playerName) return alert('กรุณากรอกชื่อ');
+    document.getElementById('nameScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+    currentQuestion = 0; score = 0; startTime = Date.now();
+    generateQuestions(); showQuestion(); startTimer();
+}
+
+function showQuestion() {
+    if (currentQuestion >= 10) return endGame();
+    const q = questions[currentQuestion];
+    document.getElementById('question').textContent = q.question;
+    document.getElementById('questionNumber').textContent = currentQuestion + 1;
+    document.getElementById('score').textContent = score;
+    const btns = document.querySelectorAll('.answer-btn');
+    btns.forEach((btn,i) => { btn.textContent = q.answers[i]; btn.disabled = false; btn.classList.remove('pulse-correct','shake-wrong'); });
+    correctAnswer = q.correct;
+}
+
+function selectAnswer(i) {
+    const btns = document.querySelectorAll('.answer-btn');
+    btns.forEach(btn => btn.disabled = true);
+    if (i === correctAnswer) { score++; btns[i].classList.add('pulse-correct'); }
+    else { btns[i].classList.add('shake-wrong'); btns[correctAnswer].classList.add('pulse-correct'); }
+    setTimeout(() => { currentQuestion++; showQuestion(); }, 500);
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        const t = Math.floor((Date.now() - startTime) / 1000);
+        const m = String(Math.floor(t/60)).padStart(2,'0');
+        const s = String(t%60).padStart(2,'0');
+        document.getElementById('timer').textContent = `${m}:${s}`;
+    }, 1000);
+}
+
+function endGame() {
+    clearInterval(timerInterval);
+    const totalTime = Math.floor((Date.now() - startTime) / 1000);
+    const m = String(Math.floor(totalTime / 60)).padStart(2,'0');
+    const s = String(totalTime % 60).padStart(2,'0');
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('resultScreen').classList.remove('hidden');
+    document.getElementById('finalPlayerName').textContent = playerName;
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalTime').textContent = `${m}:${s}`;
+    sendScoreToGoogleSheet(playerName, score, totalTime);
+    setTimeout(loadLeaderboard, 2000);
+}
+
+function playAgain() {
+    document.getElementById('resultScreen').classList.add('hidden');
+    document.getElementById('nameScreen').classList.remove('hidden');
+}
+
+function goHome() {
+    document.getElementById('resultScreen').classList.add('hidden');
+    document.getElementById('homeScreen').classList.remove('hidden');
+    loadLeaderboard();
+}
+
+loadLeaderboard();
+</script>
+</body>
+</html>
